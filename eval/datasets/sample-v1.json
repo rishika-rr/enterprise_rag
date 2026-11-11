@@ -1,0 +1,93 @@
+{
+  "name": "sample",
+  "version": "1.0.0",
+  "description": "Synthetic sample set over the four fictional policy documents in eval/corpus. It demonstrates the harness and guards against regressions; it is not the organisation's approved acceptance dataset.",
+  "corpus": "../corpus",
+  "questions": [
+    {
+      "id": "leave-01",
+      "question": "How many days of paid annual leave do full-time employees get?",
+      "relevant": [{"source": "leave-policy.md", "contains": "24 days of paid annual leave"}]
+    },
+    {
+      "id": "leave-02",
+      "question": "How many unused leave days can be carried forward to next year?",
+      "relevant": [{"source": "leave-policy.md", "contains": "carried forward"}]
+    },
+    {
+      "id": "leave-03",
+      "question": "When is a medical certificate required for sick leave?",
+      "relevant": [{"source": "leave-policy.md", "contains": "medical"}]
+    },
+    {
+      "id": "leave-04",
+      "question": "How long is parental leave for a secondary caregiver?",
+      "relevant": [{"source": "leave-policy.md", "contains": "Secondary caregivers"}]
+    },
+    {
+      "id": "expense-01",
+      "question": "What is the deadline for submitting an expense claim?",
+      "relevant": [{"source": "expense-policy.md", "contains": "within 30 days"}]
+    },
+    {
+      "id": "expense-02",
+      "question": "What is the daily meal allowance when travelling?",
+      "relevant": [{"source": "expense-policy.md", "contains": "60 dollars per day"}]
+    },
+    {
+      "id": "expense-03",
+      "question": "Who has to approve an expense claim of 2,500 dollars?",
+      "relevant": [{"source": "expense-policy.md", "contains": "department head"}]
+    },
+    {
+      "id": "remote-01",
+      "question": "How many days per week can employees work remotely?",
+      "relevant": [{"source": "remote-work.md", "contains": "three days per week"}]
+    },
+    {
+      "id": "remote-02",
+      "question": "What are the core hours for remote employees?",
+      "relevant": [{"source": "remote-work.md", "contains": "10:00 to 16:00"}]
+    },
+    {
+      "id": "remote-03",
+      "question": "How much is the home-office allowance?",
+      "relevant": [{"source": "remote-work.md", "contains": "400"}]
+    },
+    {
+      "id": "security-01",
+      "question": "What is the minimum password length?",
+      "relevant": [{"source": "security-handbook.md", "contains": "14 characters"}]
+    },
+    {
+      "id": "security-02",
+      "question": "How quickly must a suspected security incident be reported?",
+      "relevant": [{"source": "security-handbook.md", "contains": "within 1 hour"}]
+    },
+    {
+      "id": "security-03",
+      "question": "After how many minutes of inactivity must laptops lock?",
+      "relevant": [{"source": "security-handbook.md", "contains": "5 minutes"}]
+    },
+    {
+      "id": "cross-01",
+      "question": "What approvals do I need to work from another country, and how do I book leave around it?",
+      "relevant": [
+        {"source": "remote-work.md", "contains": "another country"},
+        {"source": "leave-policy.md", "contains": "HR portal"}
+      ]
+    },
+    {
+      "id": "none-01",
+      "question": "What is the company's policy on stock options vesting?",
+      "answerable": false,
+      "relevant": []
+    },
+    {
+      "id": "none-02",
+      "question": "Which programming languages does the engineering team use?",
+      "answerable": false,
+      "relevant": []
+    }
+  ]
+}

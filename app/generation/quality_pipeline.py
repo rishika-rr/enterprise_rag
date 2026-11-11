@@ -19,7 +19,7 @@ class QualityPipeline:
     def __init__(
         self,
         citation_parser: CitationParser | None = None,
-        citation_verifier: CitationVerifier | None =None,
+        citation_verifier: CitationVerifier | None = None,
         confidence_scorer: ConfidenceScorer | None = None,
     ):
 

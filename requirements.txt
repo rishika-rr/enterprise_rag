@@ -3,59 +3,46 @@
 # ==========================
 fastapi
 uvicorn[standard]
+python-multipart      # REQUIRED by FastAPI for file uploads (app crashed at start without it)
 python-dotenv
 
 # ==========================
-# LLM
+# LLM (OpenRouter via the OpenAI-compatible client)
 # ==========================
-google-generativeai
-google-genai
-openai 
+openai
 
 # ==========================
-# Embeddings
+# Embeddings / reranking
+# (torch is installed first, CPU-only, in the Dockerfile)
 # ==========================
 sentence-transformers
 
 # ==========================
-# Vector Database
+# Vector database
 # ==========================
 chromadb
 
 # ==========================
-# Document Loading
+# Document loading / chunking
 # ==========================
-langchain
 langchain-community
 langchain-text-splitters
-
 pymupdf
 beautifulsoup4
-markdown
 
 # ==========================
-# Sparse Retrieval
+# Sparse retrieval
 # ==========================
 rank-bm25
 
 # ==========================
-# ML Utilities
+# Misc
 # ==========================
 numpy
-pandas
-scikit-learn
-
-# ==========================
-# Dashboard
-# ==========================
-streamlit
-
-# ==========================
-# Progress Bars
-# ==========================
 tqdm
 
 # ==========================
 # Testing
 # ==========================
 pytest
+httpx

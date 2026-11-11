@@ -1,33 +1,47 @@
+import hashlib
+import logging
 import time
-import uuid
 from pathlib import Path
 
-from torch import chunk
-from tqdm import tqdm
 from langchain_core.documents import Document
 
-from app.database.chroma import ChromaVectorStore
+from app.database.chroma import get_vector_store
 from app.database.interfaces import VectorStore
-from app.ingestion.loader import DocumentLoader
 from app.ingestion.chunker import Chunker
-from app.models.document import (
-    ChunkingStrategy,
-    DocumentChunk,
-)
-from app.retrieval.sparse_index import SparseIndex
+from app.ingestion.loader import DocumentLoader
+from app.models.document import ChunkingStrategy, DocumentChunk, IngestResult
+from app.retrieval.sparse_index import SparseIndex, get_sparse_index
 from app.services.embedding_service import embedding_service
+
+logger = logging.getLogger("rag.indexer")
+
+
+def compute_doc_id(file_path: str, scope: str = "") -> str:
+    """
+    Stable document identifier (IF-004): SHA-256 of the scope and the file
+    content. The scope (tenant, plus the owner for private documents) keeps
+    identical files of different tenants apart, so one tenant can never
+    detect or collide with another tenant's document.
+    """
+    digest = hashlib.sha256()
+    if scope:
+        digest.update(scope.encode("utf-8") + b"\x00")
+    with open(file_path, "rb") as f:
+        for block in iter(lambda: f.read(1024 * 1024), b""):
+            digest.update(block)
+    return digest.hexdigest()[:16]
 
 
 class Indexer:
     """
     Coordinates the complete document ingestion pipeline.
 
-    Pipeline:
-        Load
-        -> Chunk
-        -> Embed
-        -> Dense Index
-        -> Sparse Index
+        Load -> Chunk -> Embed -> Dense Index -> Sparse Index
+
+    Guarantees:
+      * identical content is indexed once (duplicate policy, ING-007)
+      * ingestion is all-or-nothing: on failure nothing is left behind
+        (ING-009, ERR-005, NFR-REL-002)
     """
 
     def __init__(
@@ -35,66 +49,47 @@ class Indexer:
         vector_store: VectorStore | None = None,
         sparse_index: SparseIndex | None = None,
     ):
-
         self.loader = DocumentLoader()
         self.chunker = Chunker()
-
-        self.vector_store = (
-            vector_store
-            if vector_store is not None
-            else ChromaVectorStore()
-        )
-
-        self.sparse_index = (
-            sparse_index
-            if sparse_index is not None
-            else SparseIndex()
-        )
+        self.vector_store = vector_store if vector_store is not None else get_vector_store()
+        self.sparse_index = sparse_index if sparse_index is not None else get_sparse_index()
 
     # --------------------------------------------------
     # Helpers
     # --------------------------------------------------
 
+    @staticmethod
     def _create_document_chunk(
-        self,
-        chunk: Document,
-        index: int,
-        strategy: ChunkingStrategy,
+        chunk: Document, index: int, strategy: ChunkingStrategy, doc_id: str, source: str
     ) -> DocumentChunk:
-
         metadata = chunk.metadata
+        page = metadata.get("page")
 
         return DocumentChunk(
-            id=str(uuid.uuid4()),
+            id=f"{doc_id}-{index}",
             text=chunk.page_content,
-            source=Path(
-                metadata.get("source", "")
-            ).name,
-            page=metadata.get("page"),
+            source=source,
+            page=page + 1 if isinstance(page, int) else None,  # PyMuPDF is 0-based
             section=metadata.get("section"),
             chunk_index=index,
             strategy=strategy,
             char_count=len(chunk.page_content),
+            doc_id=doc_id,
         )
 
-    def _prepare_metadata(
-    self,
-    chunk: DocumentChunk,
-) -> dict:
-
+    @staticmethod
+    def _prepare_metadata(chunk: DocumentChunk) -> dict:
         metadata = {
+            "doc_id": chunk.doc_id,
             "source": str(chunk.source),
             "chunk_index": int(chunk.chunk_index),
             "strategy": str(chunk.strategy.value),
             "char_count": int(chunk.char_count),
         }
-
         if chunk.page is not None:
             metadata["page"] = int(chunk.page)
-
         if chunk.section is not None:
             metadata["section"] = str(chunk.section)
-
         return metadata
 
     # --------------------------------------------------
@@ -105,146 +100,78 @@ class Indexer:
         self,
         file_path: str,
         strategy: ChunkingStrategy = ChunkingStrategy.RECURSIVE,
-    ) -> list[DocumentChunk]:
-
+        doc_id: str | None = None,
+        source_name: str | None = None,
+    ) -> IngestResult:
+        """
+        `doc_id` / `source_name` let the caller supply a tenant-scoped id and
+        the original file name when the file is stored under another name.
+        """
         start = time.time()
 
-        documents = self.loader.load(file_path)
+        documents = self.loader.load(file_path)  # validates existence / type / content
+        doc_id = doc_id or compute_doc_id(file_path)
+        source = source_name or Path(file_path).name
 
-        chunks = self.chunker.chunk(
-            documents,
-            strategy,
-        )
+        existing = self.vector_store.document_chunk_count(doc_id)
+        if existing:
+            logger.info("ingest_duplicate doc_id=%s", doc_id)
+            return IngestResult(doc_id, source, "duplicate", existing)
+
+        chunks = [
+            c for c in self.chunker.chunk(documents, strategy) if c.page_content.strip()
+        ]
+        if not chunks:
+            raise ValueError(
+                "No extractable text found (scanned/image-only or empty file)."
+            )
 
         document_chunks = [
-
-            self._create_document_chunk(
-                chunk,
-                index,
-                strategy,
-            )
-
-            for index, chunk
-            in enumerate(chunks)
-
+            self._create_document_chunk(chunk, i, strategy, doc_id, source)
+            for i, chunk in enumerate(chunks)
         ]
-        texts = [
-            chunk.text
-            for chunk in document_chunks
-        ]
+        texts = [c.text for c in document_chunks]
+        ids = [c.id for c in document_chunks]
+        metadatas = [self._prepare_metadata(c) for c in document_chunks]
 
-        embeddings = []
+        # Embed everything first - the slow, failure-prone step - before
+        # touching either index.
+        embeddings = embedding_service.embed_documents(texts)
 
-        BATCH_SIZE = 8
-
-        for i in range(0, len(texts), BATCH_SIZE):
-            print(
-                f"Embedding batch {i//BATCH_SIZE + 1}/"
-                f"{(len(texts)+BATCH_SIZE-1)//BATCH_SIZE}"
+        try:
+            self.vector_store.add_documents(
+                ids=ids, documents=texts, embeddings=embeddings, metadatas=metadatas
             )
+            self.sparse_index.add_documents(ids=ids, documents=texts, metadatas=metadatas)
+        except Exception:
+            logger.exception("ingest_failed_rolling_back doc_id=%s", doc_id)
+            self._rollback(doc_id, ids)
+            raise
 
-            batch = texts[i:i+BATCH_SIZE]
-
-            embeddings.extend(
-                embedding_service.embed_documents(batch)
-            )
-
-        metadata = [
-            self._prepare_metadata(chunk)
-            for chunk in document_chunks
-        ]
-
-        self.vector_store.add_documents(
-            ids=[
-                chunk.id
-                for chunk in document_chunks
-            ],
-            documents=texts,
-            embeddings=embeddings,
-            metadatas=metadata,
+        logger.info(
+            "ingest_ok doc_id=%s chunks=%d seconds=%.2f",
+            doc_id, len(document_chunks), time.time() - start,
         )
+        return IngestResult(doc_id, source, "indexed", len(document_chunks))
 
-        self.sparse_index.add_documents(
-            ids=[
-                chunk.id
-                for chunk in document_chunks
-            ],
-            documents=texts,
-            metadatas=metadata,
-        )
+    def _rollback(self, doc_id: str, ids: list[str]) -> None:
+        try:
+            self.vector_store.delete_document(doc_id)
+        except Exception:
+            logger.exception("rollback_vector_store_failed doc_id=%s", doc_id)
+        try:
+            self.sparse_index.remove_ids(ids)
+        except Exception:
+            logger.exception("rollback_sparse_index_failed doc_id=%s", doc_id)
 
-        elapsed = time.time() - start
+    def delete_document(self, doc_id: str) -> int:
+        """Remove a document and all derived chunks from both indexes (ING-008)."""
+        removed = self.vector_store.delete_document(doc_id)
+        self.sparse_index.remove_document(doc_id)
+        return removed
 
-        print(
-            f"Indexed "
-            f"{len(document_chunks)} chunks "
-            f"in {elapsed:.2f}s"
-        )
-
-        return document_chunks
-
-    def index_directory(
-        self,
-        directory: str,
-        strategy: ChunkingStrategy = ChunkingStrategy.RECURSIVE,
-    ):
-
-        directory = Path(directory)
-
-        if not directory.exists():
-
-            raise FileNotFoundError(
-                directory
-            )
-
-        indexed = 0
-        skipped = 0
-        total_chunks = 0
-
-        start = time.time()
-
-        files = [
-            file
-            for file in directory.rglob("*")
-            if file.is_file()
-        ]
-
-        for file in tqdm(
-            files,
-            desc="Indexing",
-        ):
-
-            try:
-
-                chunks = self.index_document(
-                    str(file),
-                    strategy,
-                )
-
-                indexed += 1
-                total_chunks += len(chunks)
-
-            except ValueError:
-
-                skipped += 1
-
-            except Exception as e:
-
-                skipped += 1
-                print(
-                    f"{file.name}: {e}"
-                )
-
-        elapsed = time.time() - start
-
-        print("\n========== SUMMARY ==========")
-        print(f"Indexed Files : {indexed}")
-        print(f"Skipped Files : {skipped}")
-        print(f"Total Chunks  : {total_chunks}")
-        print(f"Elapsed Time  : {elapsed:.2f}s")
+    def list_documents(self) -> list[dict]:
+        return self.vector_store.list_documents()
 
     def get_stats(self):
-
-        return {
-            "total_chunks": self.vector_store.count()
-        }
+        return {"total_chunks": self.vector_store.count()}

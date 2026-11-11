@@ -34,3 +34,9 @@ Thumbs.db
 
 uploads/*
 !uploads/.gitkeep
+
+# Application state (users, sessions, document registry, audit log) and backups
+data/*.db
+data/*.db-*
+data/state/
+data/backups/

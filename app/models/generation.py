@@ -17,10 +17,11 @@ class GenerationResult:
 
     confidence: float | None = None
 
-    citation_results: List[CitationResult] = field(
-        default_factory=list
-    )
+    citation_results: List[CitationResult] = field(default_factory=list)
 
     model: str | None = None
 
     latency_ms: float | None = None
+
+    # True when no sufficiently relevant passage was found (RET-008)
+    no_evidence: bool = False

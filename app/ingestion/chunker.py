@@ -7,10 +7,7 @@ from langchain_text_splitters import (
     RecursiveCharacterTextSplitter,
 )
 
-from app.config.settings import (
-    CHUNK_SIZE,
-    CHUNK_OVERLAP,
-)
+from app.config import settings
 
 from app.models.document import ChunkingStrategy
 
@@ -22,11 +19,13 @@ class Chunker:
 
     def __init__(
         self,
-        chunk_size: int = CHUNK_SIZE,
-        chunk_overlap: int = CHUNK_OVERLAP,
+        chunk_size: int | None = None,
+        chunk_overlap: int | None = None,
     ):
-        self.chunk_size = chunk_size
-        self.chunk_overlap = chunk_overlap
+        self.chunk_size = chunk_size if chunk_size is not None else settings.CHUNK_SIZE
+        self.chunk_overlap = (
+            chunk_overlap if chunk_overlap is not None else settings.CHUNK_OVERLAP
+        )
 
     def fixed_chunk(
         self,

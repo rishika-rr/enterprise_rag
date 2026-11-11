@@ -27,5 +27,12 @@ Thumbs.db
 # Logs
 *.log
 
+# Local data must never be baked into the image
+data/
+uploads/
+
 # Environment
 .env
+
+# Evaluation run output
+eval/reports/

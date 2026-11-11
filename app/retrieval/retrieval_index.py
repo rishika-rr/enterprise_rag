@@ -19,9 +19,14 @@ class RetrievalIndex(ABC):
         pass
 
     @abstractmethod
+    def remove_ids(self, ids: List[str]) -> None:
+        pass
+
+    @abstractmethod
     def search(
         self,
         query: str,
         top_k: int = 10,
+        where: dict | None = None,
     ) -> List[RetrievalResult]:
         pass

@@ -1,0 +1,23 @@
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      CHROMA_DB_PATH: /app/data/chroma_db
+      APP_DB_PATH: /app/data/state/app.db
+      UPLOAD_DIR: /app/uploads
+    volumes:
+      - chroma_data:/app/data/chroma_db   # vector index survives restarts
+      - state_data:/app/data/state        # users, document registry, audit log
+      - uploads_data:/app/uploads
+      - hf_cache:/app/.cache/huggingface  # model weights are downloaded once
+    restart: unless-stopped
+
+volumes:
+  chroma_data:
+  state_data:
+  uploads_data:
+  hf_cache:

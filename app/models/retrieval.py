@@ -14,8 +14,13 @@ class RetrievalResult:
 
     metadata: Dict[str, Any]
 
+    # Retriever-specific score (dense: distance, bm25: BM25 score, hybrid: RRF)
     score: float
 
     retriever: str
 
+    # Raw reranker output (cross-encoder logit, unbounded)
     rerank_score: float | None = None
+
+    # Normalised 0-1 relevance from the reranker; None when reranking is off
+    relevance: float | None = None

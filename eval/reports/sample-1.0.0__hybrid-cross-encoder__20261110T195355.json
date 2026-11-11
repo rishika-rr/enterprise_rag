@@ -1,0 +1,742 @@
+{
+  "report_version": 1,
+  "label": "hybrid-cross-encoder",
+  "started_at": "2026-11-10T19:53:55+00:00",
+  "dataset": {
+    "name": "sample",
+    "version": "1.0.0",
+    "sha256": "1a6b06b76d29e6e6a84c6f632764f5d0fd26cedb49cafac03710efd39a3634cf",
+    "questions": 16
+  },
+  "corpus": {
+    "documents": 4,
+    "chunks": 8
+  },
+  "mode": "retrieval",
+  "config": {
+    "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+    "reranker": "cross_encoder",
+    "cross_encoder_model": "cross-encoder/ms-marco-MiniLM-L-6-v2",
+    "llm_model": "deepseek/deepseek-chat-v3",
+    "retrieval_mode": "hybrid",
+    "top_k": 10,
+    "rerank_top_k": 5,
+    "chunk_size": 500,
+    "chunk_overlap": 100,
+    "chunk_strategy": "recursive",
+    "min_relevance": 0.01,
+    "max_context_chars": 12000
+  },
+  "environment": {
+    "python": "3.12.6",
+    "platform": "Windows-11-10.0.26300-SP0",
+    "processor": "Intel64 Family 6 Model 186 Stepping 2, GenuineIntel",
+    "concurrency": 1,
+    "cache_state": "cold index, models loaded on first question"
+  },
+  "metrics": {
+    "k": 5,
+    "recall_at_k": 1.0,
+    "mrr": 1.0,
+    "questions": 16,
+    "failed_requests": 0,
+    "error_rate": 0.0,
+    "unlabelled_questions": [],
+    "latency": {
+      "p50_ms": 153.56879999671946,
+      "p90_ms": 393.65140000154497,
+      "p95_ms": 1774.852299997292,
+      "max_ms": 1774.852299997292
+    }
+  },
+  "per_question": [
+    {
+      "id": "leave-01",
+      "question": "How many days of paid annual leave do full-time employees get?",
+      "answerable": true,
+      "has_labels": true,
+      "labelled": true,
+      "error": null,
+      "latency_ms": 393.65140000154497,
+      "retrieved": [
+        {
+          "rank": 1,
+          "source": "leave-policy.md",
+          "chunk_id": "c87522713482ad3c-0",
+          "relevance": 0.9999048991044432
+        },
+        {
+          "rank": 2,
+          "source": "leave-policy.md",
+          "chunk_id": "c87522713482ad3c-1",
+          "relevance": 0.42404927904057943
+        },
+        {
+          "rank": 3,
+          "source": "remote-work.md",
+          "chunk_id": "2b1163a31103822b-1",
+          "relevance": 0.27907844323780545
+        },
+        {
+          "rank": 4,
+          "source": "remote-work.md",
+          "chunk_id": "2b1163a31103822b-0",
+          "relevance": 0.003275084774221168
+        },
+        {
+          "rank": 5,
+          "source": "expense-policy.md",
+          "chunk_id": "a3acd2f52e1cb20f-0",
+          "relevance": 8.801247016498337e-05
+        }
+      ],
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0
+    },
+    {
+      "id": "leave-02",
+      "question": "How many unused leave days can be carried forward to next year?",
+      "answerable": true,
+      "has_labels": true,
+      "labelled": true,
+      "error": null,
+      "latency_ms": 151.15329999753158,
+      "retrieved": [
+        {
+          "rank": 1,
+          "source": "leave-policy.md",
+          "chunk_id": "c87522713482ad3c-0",
+          "relevance": 0.999774268140003
+        },
+        {
+          "rank": 2,
+          "source": "leave-policy.md",
+          "chunk_id": "c87522713482ad3c-1",
+          "relevance": 0.017982134053963945
+        },
+        {
+          "rank": 3,
+          "source": "remote-work.md",
+          "chunk_id": "2b1163a31103822b-1",
+          "relevance": 0.01642736870191831
+        },
+        {
+          "rank": 4,
+          "source": "remote-work.md",
+          "chunk_id": "2b1163a31103822b-0",
+          "relevance": 0.00015494380632275726
+        },
+        {
+          "rank": 5,
+          "source": "expense-policy.md",
+          "chunk_id": "a3acd2f52e1cb20f-0",
+          "relevance": 5.259075241177738e-05
+        }
+      ],
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0
+    },
+    {
+      "id": "leave-03",
+      "question": "When is a medical certificate required for sick leave?",
+      "answerable": true,
+      "has_labels": true,
+      "labelled": true,
+      "error": null,
+      "latency_ms": 158.2966000023589,
+      "retrieved": [
+        {
+          "rank": 1,
+          "source": "leave-policy.md",
+          "chunk_id": "c87522713482ad3c-0",
+          "relevance": 0.9807417361654934
+        },
+        {
+          "rank": 2,
+          "source": "leave-policy.md",
+          "chunk_id": "c87522713482ad3c-1",
+          "relevance": 0.0006457043213102334
+        },
+        {
+          "rank": 3,
+          "source": "remote-work.md",
+          "chunk_id": "2b1163a31103822b-1",
+          "relevance": 2.085860111679594e-05
+        },
+        {
+          "rank": 4,
+          "source": "expense-policy.md",
+          "chunk_id": "a3acd2f52e1cb20f-0",
+          "relevance": 1.3580585055714868e-05
+        },
+        {
+          "rank": 5,
+          "source": "remote-work.md",
+          "chunk_id": "2b1163a31103822b-0",
+          "relevance": 1.3187814017738499e-05
+        }
+      ],
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0
+    },
+    {
+      "id": "leave-04",
+      "question": "How long is parental leave for a secondary caregiver?",
+      "answerable": true,
+      "has_labels": true,
+      "labelled": true,
+      "error": null,
+      "latency_ms": 152.27049999884912,
+      "retrieved": [
+        {
+          "rank": 1,
+          "source": "leave-policy.md",
+          "chunk_id": "c87522713482ad3c-1",
+          "relevance": 0.9999209658053834
+        },
+        {
+          "rank": 2,
+          "source": "leave-policy.md",
+          "chunk_id": "c87522713482ad3c-0",
+          "relevance": 0.03314452226526638
+        },
+        {
+          "rank": 3,
+          "source": "remote-work.md",
+          "chunk_id": "2b1163a31103822b-1",
+          "relevance": 5.812052859492696e-05
+        },
+        {
+          "rank": 4,
+          "source": "expense-policy.md",
+          "chunk_id": "a3acd2f52e1cb20f-0",
+          "relevance": 1.9545596138606998e-05
+        },
+        {
+          "rank": 5,
+          "source": "remote-work.md",
+          "chunk_id": "2b1163a31103822b-0",
+          "relevance": 1.7338686084986203e-05
+        }
+      ],
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0
+    },
+    {
+      "id": "expense-01",
+      "question": "What is the deadline for submitting an expense claim?",
+      "answerable": true,
+      "has_labels": true,
+      "labelled": true,
+      "error": null,
+      "latency_ms": 158.79239999776473,
+      "retrieved": [
+        {
+          "rank": 1,
+          "source": "expense-policy.md",
+          "chunk_id": "a3acd2f52e1cb20f-0",
+          "relevance": 0.999337181301888
+        },
+        {
+          "rank": 2,
+          "source": "expense-policy.md",
+          "chunk_id": "a3acd2f52e1cb20f-1",
+          "relevance": 0.00035778149729736474
+        },
+        {
+          "rank": 3,
+          "source": "leave-policy.md",
+          "chunk_id": "c87522713482ad3c-1",
+          "relevance": 0.0003258319641877383
+        },
+        {
+          "rank": 4,
+          "source": "remote-work.md",
+          "chunk_id": "2b1163a31103822b-1",
+          "relevance": 6.0543400661391406e-05
+        },
+        {
+          "rank": 5,
+          "source": "remote-work.md",
+          "chunk_id": "2b1163a31103822b-0",
+          "relevance": 1.3344334661413556e-05
+        }
+      ],
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0
+    },
+    {
+      "id": "expense-02",
+      "question": "What is the daily meal allowance when travelling?",
+      "answerable": true,
+      "has_labels": true,
+      "labelled": true,
+      "error": null,
+      "latency_ms": 144.46670000324957,
+      "retrieved": [
+        {
+          "rank": 1,
+          "source": "expense-policy.md",
+          "chunk_id": "a3acd2f52e1cb20f-0",
+          "relevance": 0.9969933036908397
+        },
+        {
+          "rank": 2,
+          "source": "remote-work.md",
+          "chunk_id": "2b1163a31103822b-0",
+          "relevance": 5.5234933744962725e-05
+        },
+        {
+          "rank": 3,
+          "source": "remote-work.md",
+          "chunk_id": "2b1163a31103822b-1",
+          "relevance": 3.943235709830424e-05
+        },
+        {
+          "rank": 4,
+          "source": "leave-policy.md",
+          "chunk_id": "c87522713482ad3c-0",
+          "relevance": 1.4938481279478547e-05
+        },
+        {
+          "rank": 5,
+          "source": "leave-policy.md",
+          "chunk_id": "c87522713482ad3c-1",
+          "relevance": 1.4205269657502884e-05
+        }
+      ],
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0
+    },
+    {
+      "id": "expense-03",
+      "question": "Who has to approve an expense claim of 2,500 dollars?",
+      "answerable": true,
+      "has_labels": true,
+      "labelled": true,
+      "error": null,
+      "latency_ms": 153.42969999983325,
+      "retrieved": [
+        {
+          "rank": 1,
+          "source": "expense-policy.md",
+          "chunk_id": "a3acd2f52e1cb20f-1",
+          "relevance": 0.9602281470397996
+        },
+        {
+          "rank": 2,
+          "source": "expense-policy.md",
+          "chunk_id": "a3acd2f52e1cb20f-0",
+          "relevance": 0.636524349427446
+        },
+        {
+          "rank": 3,
+          "source": "remote-work.md",
+          "chunk_id": "2b1163a31103822b-0",
+          "relevance": 2.060848031355757e-05
+        },
+        {
+          "rank": 4,
+          "source": "remote-work.md",
+          "chunk_id": "2b1163a31103822b-1",
+          "relevance": 1.51589717528928e-05
+        },
+        {
+          "rank": 5,
+          "source": "leave-policy.md",
+          "chunk_id": "c87522713482ad3c-1",
+          "relevance": 1.3894178584603719e-05
+        }
+      ],
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0
+    },
+    {
+      "id": "remote-01",
+      "question": "How many days per week can employees work remotely?",
+      "answerable": true,
+      "has_labels": true,
+      "labelled": true,
+      "error": null,
+      "latency_ms": 168.4964999985823,
+      "retrieved": [
+        {
+          "rank": 1,
+          "source": "remote-work.md",
+          "chunk_id": "2b1163a31103822b-0",
+          "relevance": 0.9998343145257429
+        },
+        {
+          "rank": 2,
+          "source": "remote-work.md",
+          "chunk_id": "2b1163a31103822b-1",
+          "relevance": 0.5311250951908489
+        },
+        {
+          "rank": 3,
+          "source": "leave-policy.md",
+          "chunk_id": "c87522713482ad3c-0",
+          "relevance": 0.03551144145801979
+        },
+        {
+          "rank": 4,
+          "source": "leave-policy.md",
+          "chunk_id": "c87522713482ad3c-1",
+          "relevance": 0.001513291366542811
+        },
+        {
+          "rank": 5,
+          "source": "expense-policy.md",
+          "chunk_id": "a3acd2f52e1cb20f-0",
+          "relevance": 6.002875493603066e-05
+        }
+      ],
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0
+    },
+    {
+      "id": "remote-02",
+      "question": "What are the core hours for remote employees?",
+      "answerable": true,
+      "has_labels": true,
+      "labelled": true,
+      "error": null,
+      "latency_ms": 147.46970000123838,
+      "retrieved": [
+        {
+          "rank": 1,
+          "source": "remote-work.md",
+          "chunk_id": "2b1163a31103822b-0",
+          "relevance": 0.9996541048642495
+        },
+        {
+          "rank": 2,
+          "source": "remote-work.md",
+          "chunk_id": "2b1163a31103822b-1",
+          "relevance": 4.984589034700725e-05
+        },
+        {
+          "rank": 3,
+          "source": "leave-policy.md",
+          "chunk_id": "c87522713482ad3c-0",
+          "relevance": 4.230849536308817e-05
+        },
+        {
+          "rank": 4,
+          "source": "leave-policy.md",
+          "chunk_id": "c87522713482ad3c-1",
+          "relevance": 1.4759123889822953e-05
+        },
+        {
+          "rank": 5,
+          "source": "security-handbook.md",
+          "chunk_id": "781e8bc8beb290d7-0",
+          "relevance": 1.4649954284855799e-05
+        }
+      ],
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0
+    },
+    {
+      "id": "remote-03",
+      "question": "How much is the home-office allowance?",
+      "answerable": true,
+      "has_labels": true,
+      "labelled": true,
+      "error": null,
+      "latency_ms": 161.1698000015167,
+      "retrieved": [
+        {
+          "rank": 1,
+          "source": "remote-work.md",
+          "chunk_id": "2b1163a31103822b-0",
+          "relevance": 0.8813064451684184
+        },
+        {
+          "rank": 2,
+          "source": "expense-policy.md",
+          "chunk_id": "a3acd2f52e1cb20f-0",
+          "relevance": 0.0030973152483591993
+        },
+        {
+          "rank": 3,
+          "source": "expense-policy.md",
+          "chunk_id": "a3acd2f52e1cb20f-1",
+          "relevance": 0.0013566886097729279
+        },
+        {
+          "rank": 4,
+          "source": "leave-policy.md",
+          "chunk_id": "c87522713482ad3c-1",
+          "relevance": 2.8729655205536157e-05
+        },
+        {
+          "rank": 5,
+          "source": "remote-work.md",
+          "chunk_id": "2b1163a31103822b-1",
+          "relevance": 2.4853346666323114e-05
+        }
+      ],
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0
+    },
+    {
+      "id": "security-01",
+      "question": "What is the minimum password length?",
+      "answerable": true,
+      "has_labels": true,
+      "labelled": true,
+      "error": null,
+      "latency_ms": 150.04970000154572,
+      "retrieved": [
+        {
+          "rank": 1,
+          "source": "security-handbook.md",
+          "chunk_id": "781e8bc8beb290d7-0",
+          "relevance": 0.9230973388024886
+        },
+        {
+          "rank": 2,
+          "source": "security-handbook.md",
+          "chunk_id": "781e8bc8beb290d7-1",
+          "relevance": 1.526187386645623e-05
+        },
+        {
+          "rank": 3,
+          "source": "leave-policy.md",
+          "chunk_id": "c87522713482ad3c-1",
+          "relevance": 1.3904888982932872e-05
+        },
+        {
+          "rank": 4,
+          "source": "expense-policy.md",
+          "chunk_id": "a3acd2f52e1cb20f-0",
+          "relevance": 1.2761415667451827e-05
+        },
+        {
+          "rank": 5,
+          "source": "remote-work.md",
+          "chunk_id": "2b1163a31103822b-1",
+          "relevance": 1.1992000375205543e-05
+        }
+      ],
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0
+    },
+    {
+      "id": "security-02",
+      "question": "How quickly must a suspected security incident be reported?",
+      "answerable": true,
+      "has_labels": true,
+      "labelled": true,
+      "error": null,
+      "latency_ms": 146.67370000097435,
+      "retrieved": [
+        {
+          "rank": 1,
+          "source": "security-handbook.md",
+          "chunk_id": "781e8bc8beb290d7-0",
+          "relevance": 0.9993495059398565
+        },
+        {
+          "rank": 2,
+          "source": "security-handbook.md",
+          "chunk_id": "781e8bc8beb290d7-1",
+          "relevance": 0.0575825133101417
+        },
+        {
+          "rank": 3,
+          "source": "expense-policy.md",
+          "chunk_id": "a3acd2f52e1cb20f-0",
+          "relevance": 0.00020031081593699265
+        },
+        {
+          "rank": 4,
+          "source": "leave-policy.md",
+          "chunk_id": "c87522713482ad3c-1",
+          "relevance": 3.626995975437285e-05
+        },
+        {
+          "rank": 5,
+          "source": "remote-work.md",
+          "chunk_id": "2b1163a31103822b-0",
+          "relevance": 2.8581923029975796e-05
+        }
+      ],
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0
+    },
+    {
+      "id": "security-03",
+      "question": "After how many minutes of inactivity must laptops lock?",
+      "answerable": true,
+      "has_labels": true,
+      "labelled": true,
+      "error": null,
+      "latency_ms": 153.56879999671946,
+      "retrieved": [
+        {
+          "rank": 1,
+          "source": "security-handbook.md",
+          "chunk_id": "781e8bc8beb290d7-1",
+          "relevance": 0.999811888060023
+        },
+        {
+          "rank": 2,
+          "source": "security-handbook.md",
+          "chunk_id": "781e8bc8beb290d7-0",
+          "relevance": 5.862121919277798e-05
+        },
+        {
+          "rank": 3,
+          "source": "remote-work.md",
+          "chunk_id": "2b1163a31103822b-0",
+          "relevance": 1.8648616221536687e-05
+        },
+        {
+          "rank": 4,
+          "source": "expense-policy.md",
+          "chunk_id": "a3acd2f52e1cb20f-0",
+          "relevance": 1.1429710813530588e-05
+        },
+        {
+          "rank": 5,
+          "source": "leave-policy.md",
+          "chunk_id": "c87522713482ad3c-1",
+          "relevance": 1.1221787492848835e-05
+        }
+      ],
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0
+    },
+    {
+      "id": "cross-01",
+      "question": "What approvals do I need to work from another country, and how do I book leave around it?",
+      "answerable": true,
+      "has_labels": true,
+      "labelled": true,
+      "error": null,
+      "latency_ms": 197.03709999885177,
+      "retrieved": [
+        {
+          "rank": 1,
+          "source": "remote-work.md",
+          "chunk_id": "2b1163a31103822b-1",
+          "relevance": 0.9856780019462035
+        },
+        {
+          "rank": 2,
+          "source": "remote-work.md",
+          "chunk_id": "2b1163a31103822b-0",
+          "relevance": 0.00143966728134605
+        },
+        {
+          "rank": 3,
+          "source": "leave-policy.md",
+          "chunk_id": "c87522713482ad3c-1",
+          "relevance": 0.000295019562219651
+        },
+        {
+          "rank": 4,
+          "source": "expense-policy.md",
+          "chunk_id": "a3acd2f52e1cb20f-0",
+          "relevance": 0.00026033557091544447
+        },
+        {
+          "rank": 5,
+          "source": "expense-policy.md",
+          "chunk_id": "a3acd2f52e1cb20f-1",
+          "relevance": 7.65430239900568e-05
+        }
+      ],
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0
+    },
+    {
+      "id": "none-01",
+      "question": "What is the company's policy on stock options vesting?",
+      "answerable": false,
+      "has_labels": false,
+      "labelled": true,
+      "error": null,
+      "latency_ms": 158.462999999756,
+      "retrieved": [
+        {
+          "rank": 1,
+          "source": "expense-policy.md",
+          "chunk_id": "a3acd2f52e1cb20f-0",
+          "relevance": 1.474394457117412e-05
+        },
+        {
+          "rank": 2,
+          "source": "leave-policy.md",
+          "chunk_id": "c87522713482ad3c-0",
+          "relevance": 1.3945286147083743e-05
+        },
+        {
+          "rank": 3,
+          "source": "expense-policy.md",
+          "chunk_id": "a3acd2f52e1cb20f-1",
+          "relevance": 1.2825114096036818e-05
+        },
+        {
+          "rank": 4,
+          "source": "security-handbook.md",
+          "chunk_id": "781e8bc8beb290d7-1",
+          "relevance": 1.1960477619885334e-05
+        },
+        {
+          "rank": 5,
+          "source": "leave-policy.md",
+          "chunk_id": "c87522713482ad3c-1",
+          "relevance": 1.184709271308338e-05
+        }
+      ],
+      "recall_at_k": null,
+      "reciprocal_rank": null
+    },
+    {
+      "id": "none-02",
+      "question": "Which programming languages does the engineering team use?",
+      "answerable": false,
+      "has_labels": false,
+      "labelled": true,
+      "error": null,
+      "latency_ms": 1774.852299997292,
+      "retrieved": [
+        {
+          "rank": 1,
+          "source": "security-handbook.md",
+          "chunk_id": "781e8bc8beb290d7-0",
+          "relevance": 1.3397814296443914e-05
+        },
+        {
+          "rank": 2,
+          "source": "leave-policy.md",
+          "chunk_id": "c87522713482ad3c-0",
+          "relevance": 1.3347147399254914e-05
+        },
+        {
+          "rank": 3,
+          "source": "leave-policy.md",
+          "chunk_id": "c87522713482ad3c-1",
+          "relevance": 1.3176550095327373e-05
+        },
+        {
+          "rank": 4,
+          "source": "expense-policy.md",
+          "chunk_id": "a3acd2f52e1cb20f-0",
+          "relevance": 1.2809199444091014e-05
+        },
+        {
+          "rank": 5,
+          "source": "security-handbook.md",
+          "chunk_id": "781e8bc8beb290d7-1",
+          "relevance": 1.2616195140474833e-05
+        }
+      ],
+      "recall_at_k": null,
+      "reciprocal_rank": null
+    }
+  ]
+}

@@ -1,11 +1,13 @@
 from dataclasses import dataclass
-from typing import Optional
 from enum import Enum
+from typing import Optional
+
 
 class ChunkingStrategy(str, Enum):
     FIXED = "fixed"
     RECURSIVE = "recursive"
-    SEMANTIC = "semantic"
+    SEMANTIC = "semantic"  # reserved - not implemented yet
+
 
 @dataclass
 class DocumentChunk:
@@ -14,7 +16,7 @@ class DocumentChunk:
     required for retrieval, reranking, and citation.
     """
 
-    # Unique identifier
+    # Unique identifier ("<doc_id>-<chunk_index>", deterministic)
     id: str
 
     # Actual chunk text
@@ -23,7 +25,7 @@ class DocumentChunk:
     # Original document filename
     source: str
 
-    # Page number (None for txt/markdown)
+    # Page number, 1-based (None for txt/markdown/html)
     page: Optional[int]
 
     # Section heading if available
@@ -37,3 +39,16 @@ class DocumentChunk:
 
     # Number of characters in the chunk
     char_count: int
+
+    # Stable parent-document identifier (content hash)
+    doc_id: str = ""
+
+
+@dataclass
+class IngestResult:
+    """Outcome of ingesting one document (IF-004, ING-006)."""
+
+    doc_id: str
+    source: str
+    status: str  # "indexed" | "duplicate"
+    chunk_count: int

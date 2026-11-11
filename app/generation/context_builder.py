@@ -1,14 +1,21 @@
 from typing import List
 
+from app.config import settings
 from app.models.context import PromptContext
 from app.models.retrieval import RetrievalResult
 
 
 class ContextBuilder:
     """
-    Builds the formatted context supplied to the LLM
-    from retrieved document chunks.
+    Builds the formatted context supplied to the LLM from retrieved chunks.
+
+    The total passage text is capped at MAX_CONTEXT_CHARS (PERF-006): passages
+    are taken in rank order and the rest are dropped, so `citations` contains
+    exactly the passages the model saw.
     """
+
+    def __init__(self, max_chars: int | None = None):
+        self.max_chars = max_chars if max_chars is not None else settings.MAX_CONTEXT_CHARS
 
     def build(
         self,
@@ -17,9 +24,20 @@ class ContextBuilder:
 
         formatted_chunks = []
         citations = {}
+        used = 0
 
-        for index, result in enumerate(results, start=1):
+        for result in results:
+            text = result.document
+            remaining = self.max_chars - used
+            if remaining <= 0:
+                break
+            if len(text) > remaining:
+                if citations:  # keep whole passages; never drop the best one
+                    break
+                text = text[:remaining]
+            used += len(text)
 
+            index = len(citations) + 1
             metadata = result.metadata
 
             source = metadata.get("source", "Unknown")
@@ -31,7 +49,7 @@ class ContextBuilder:
                 f"Source : {source}\n"
                 f"Section: {section}\n"
                 f"Page   : {page}\n\n"
-                f"{result.document}"
+                f"{text}"
             )
 
             formatted_chunks.append(chunk)

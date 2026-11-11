@@ -1,9 +1,10 @@
 from typing import List
 
-from app.database.chroma import ChromaVectorStore
+from app.config import settings
+from app.database.chroma import get_vector_store
 from app.database.interfaces import VectorStore
-from app.services.embedding_service import embedding_service
 from app.models.retrieval import RetrievalResult
+from app.services.embedding_service import embedding_service
 
 
 class DenseRetriever:
@@ -14,27 +15,13 @@ class DenseRetriever:
     def __init__(
         self,
         vector_store: VectorStore | None = None,
-        top_k: int = 10,
+        top_k: int | None = None,
     ):
+        self.top_k = top_k if top_k is not None else settings.TOP_K
+        self.vector_store = vector_store if vector_store is not None else get_vector_store()
 
-        self.top_k = top_k
-
-        self.vector_store = (
-            vector_store
-            if vector_store is not None
-            else ChromaVectorStore()
-        )
-
-    def search(
-        self,
-        query: str,
-    ) -> List[RetrievalResult]:
-
-        query_embedding = embedding_service.embed_query(
-            query
-        )
-
+    def search(self, query: str, where: dict | None = None) -> List[RetrievalResult]:
+        query_embedding = embedding_service.embed_query(query)
         return self.vector_store.search(
-            embedding=query_embedding,
-            top_k=self.top_k,
+            embedding=query_embedding, top_k=self.top_k, where=where
         )
